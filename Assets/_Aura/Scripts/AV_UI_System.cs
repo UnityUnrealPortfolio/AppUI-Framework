@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
-
+using System;
 
 namespace Auravision.UI
 {
     public class AV_UI_System : MonoBehaviour
     {
         #region Variables
+        [Header("Main Properties")]
+        [SerializeField] AV_UI_Screen m_StartScreen;
         [SerializeField] Component[] m_Screens;
 
         private AV_UI_Screen currentScreen;
@@ -33,13 +35,27 @@ namespace Auravision.UI
         private void Start()
         {
             m_Screens = GetComponentsInChildren<AV_UI_Screen>(true);
+            IniatializeScreens();
+
+            if(m_StartScreen != null)
+            {
+                SwitchScreens(m_StartScreen);
+            }
 
             if(m_fader != null)
             {
                 m_fader.gameObject.SetActive(true);
             }
             FadeIn();
-        } 
+        }
+
+        private void IniatializeScreens()
+        {
+            foreach(var screen in m_Screens)
+            {
+                screen.gameObject.SetActive(true);
+            }
+        }
         #endregion
 
         #region Utility
@@ -57,12 +73,12 @@ namespace Auravision.UI
                 //do we have a current screen
                 if (currentScreen)
                 {
-                    //currentScreen.Close();
+                    currentScreen.CloseScreen();
                     previousScreen  = currentScreen;
                 }
                 currentScreen = screenToSwitchTo;
                 currentScreen.gameObject.SetActive(true);
-                //currentScreen.StartScreen();
+                currentScreen.StartScreen();
 
                 //let other interested objects know of the screen switch
                 if(onSwitchedScreens != null)
